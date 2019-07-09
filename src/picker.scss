@@ -246,10 +246,14 @@ $primary-color: #1284e7;
   }
 }
 
+.mx-Datetime-picker-wrapper {
+  display: flex;
+}
 .mx-time-picker-content {
   width: 32px * 7;
   height: 32px * 7;
   overflow: scroll;
+  overflow-x: hidden;
   .cell {
     vertical-align: middle;
     cursor: pointer;

@@ -14,6 +14,10 @@ export class DateTimeSlotPicker extends Component{
         }
     }
 
+    componentDidMount() {
+        this.getAvailableTimeSlots();
+    }
+
     onDateChange = (date) => {
         this.setState((state, props) => {
             return {
