@@ -41,6 +41,7 @@ export class DateTimePicker extends Component{
                 selectedDate: dateVal
             }
         });
+        this.updateDate()
     }
 
     text = () => {
@@ -272,25 +273,26 @@ export class DateTimePicker extends Component{
                     <div className="mx-datepicker-popup"
                      style={{innerPopupStyle}}
                      ref="calendar">
-                    <CalendarPanel
-                        index="-1"
-                        type={type}
-                        date-format={dateFormat}
-                        value={selectedDate}
-                        visible={this.state.popupVisible}
-                        selectDate={this.selectDate}
-                        />
-                    { showTimeSlotPanel &&
-                         <TimePickerPanel
-                                index="-1"
-                                type={type}
-                                selectedDate={selectedDate}
-                                selectedTime={selectedTime}
-                                selectTime={this.selectTime}
-                                availableTimeSlots={ availableTimeSlots }
-                         />
-                    }
-
+                    <div className="mx-Datetime-picker-wrapper">
+                        <CalendarPanel
+                            index="-1"
+                            type={type}
+                            date-format={dateFormat}
+                            value={selectedDate}
+                            visible={this.state.popupVisible}
+                            selectDate={this.selectDate}
+                            />
+                        { showTimeSlotPanel &&
+                             <TimePickerPanel
+                                    index="-1"
+                                    type={type}
+                                    selectedDate={selectedDate}
+                                    selectedTime={selectedTime}
+                                    selectTime={this.selectTime}
+                                    availableTimeSlots={ availableTimeSlots }
+                             />
+                        }
+                    </div>
                     <slot name="footer">
                         {confirm &&
                             <div className="mx-datepicker-footer">
