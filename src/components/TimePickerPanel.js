@@ -14,7 +14,7 @@ export class TimePickerPanel extends Component{
     }
 
     static defaultProps = {
-        selectedDate : new Date(),
+        selectedDate : moment(),
         availableTimeSlots: [[],[]],
         selectedTime : ''
     }
@@ -23,7 +23,7 @@ export class TimePickerPanel extends Component{
         this.setState((state, props) => {
             return {
                 selectedDate : this.props.selectedDate,
-                selectedTimeSlot: this.props.selectedDate.getUTCHours()+`:`+this.props.selectedDate.getUTCMinutes()
+                selectedTimeSlot: this.props.selectedDate.getHours()+`:`+this.props.selectedDate.getMinutes()
             }
         });
     }

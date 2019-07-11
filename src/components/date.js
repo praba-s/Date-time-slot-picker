@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { formatDate } from '../utils/index'
 import PropTypes from 'prop-types'
-
+import moment from 'moment'
 export class PanelDate extends Component {
   constructor (props) {
       super(props)

@@ -54,7 +54,26 @@ export function formatTime (time, type = '24', a = 'a') {
   return result
 }
 
+export function convertTimeFrom12To24(timeStr) {
+    var colon = timeStr.indexOf(':');
+    var hours = timeStr.substr(0, colon),
+        minutes = timeStr.substr(colon+1, 2),
+        meridian = timeStr.substr(colon+4, 2).toUpperCase();
+
+
+    var hoursInt = parseInt(hours, 10),
+        offset = meridian == 'PM' ? 12 : 0;
+
+    if (hoursInt === 12) {
+        hoursInt = offset;
+    } else {
+        hoursInt += offset;
+    }
+    return hoursInt + ":" + minutes;
+}
+
 export function formatDate (date, format) {
+  console.log("formatDate123    " + formatDate)
   if (!date) {
     return ''
   }
@@ -94,6 +113,4 @@ export function throttle (action, delay) {
     }
   }
 }
-
-export const isEmpty = value => value === undefined || value === null || value.length === 0 || value === '' || (value.constructor === Object && Object.keys(value).length === 0);
 
