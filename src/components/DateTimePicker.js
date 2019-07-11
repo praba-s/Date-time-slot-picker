@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
-import { isValidDate, isValidRangeDate, isDateObejct, isPlainObject, formatDate, parseDate } from '../utils/index'
+import { isValidDate, isValidRangeDate, isDateObejct, isPlainObject, formatDate, parseDate, convertTimeFrom12To24 } from '../utils/index'
 import { CalendarPanel } from '../components/CalendarPanel'
 import { TimePickerPanel } from "./TimePickerPanel";
 import { isEmpty } from '../utils/utils'
+import moment from 'moment'
 
 export class DateTimePicker extends Component{
 
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: new Date(),
+            selectedDate: '',
             popupVisible: false,
             position: {},
             selectedTime: ""
@@ -17,7 +18,7 @@ export class DateTimePicker extends Component{
     }
 
     static defaultProps = {
-        format: 'YYYY-MM-DD',
+        format: 'MM/DD/YYYY hh:mm a',
         type: 'type',
         confirmText: 'OK',
         confirm: true,
@@ -25,7 +26,7 @@ export class DateTimePicker extends Component{
         inputClass: 'mx-input',
         popupStyle: '',
         placeholder: "Please select Date",
-        showSlotPanel: false,
+        showTimeSlotPanel: false,
         selectedTime: '',
         onChange: function () {
 
@@ -34,7 +35,7 @@ export class DateTimePicker extends Component{
 
     componentDidMount() {
         const { value, format } = this.props
-        const dateVal = !isEmpty(value) && this.isValidValue(value) ? value : new Date()
+        const dateVal = !isEmpty(value) && this.isValidValue(value) ? value : ''
         this.setState((state, props) => {
             return {
                 selectedDate: dateVal
@@ -47,7 +48,10 @@ export class DateTimePicker extends Component{
         /*let dateText = this.isValidValue(selectedDate)
                 ? this.stringify(this.parse(selectedDate))
                 : ''*/
-        return selectedDate;
+        console.log("selectedDate **** " + selectedDate)
+
+        let dateText  = isEmpty(selectedDate) ? '' : moment(selectedDate).format(this.props.format);
+        return dateText;
     }
 
     parse (value) {
@@ -67,12 +71,19 @@ export class DateTimePicker extends Component{
     }
 
     showPopup = (event) => {
+        const { selectedDate } = this.state
         event.preventDefault();
         event.nativeEvent.stopImmediatePropagation();
         if (this.disabled) {
             return
         }
-        this.setState({'popupVisible': true});
+        this.setState((state,props) => {
+            return {
+                selectedDate : (selectedDate === '') ? new Date() : selectedDate,
+                popupVisible: true
+            }
+        });
+        this.updateDate();
     }
 
     closePopup = () => {
@@ -97,25 +108,23 @@ export class DateTimePicker extends Component{
             // ie emit the watch before the change event
             event.stopPropagation()
             this.handleChange()
-            this.setState({'userInput' : null})
             this.closePopup()
         }
     }
 
     clearDate = (e) => {
         e.stopPropagation();
-        this.setState({selectedDate:  new Date(), userInput : '' })
+        this.setState({selectedDate:  ''})
         this.updateDate(true)
         if(this.props.clear !== undefined){ this.props.clear()};
     }
 
     handleInput = (event) => {
-        this.setState({'userInput' : event.target.value})
     }
 
     handleChange = () => {
-        if (this.props.editable && this.state.userInput !== null) {
-            const value = this.text
+        if (this.props.editable) {
+            const value = this.text()
             const checkDate = this.$refs.calendarPanel.isDisabledTime
             if (!value) {
                 this.clearDate()
@@ -145,10 +154,14 @@ export class DateTimePicker extends Component{
         if(close){ this.closePopup() }
     }
 
-    selectTime = (time, timeType) => { //TODO change am pm logic
+    selectTime = (time, timeType) => {
         let date = this.state.selectedDate;
         let timeArr = !isEmpty(time) ? time.split(":") : []
-        if(timeArr.length > 0 ){ date.setHours(time.split(":")[0]); date.setMinutes(time.split(":")[1]) }
+        let formattedTime = convertTimeFrom12To24(time + " " + timeType);
+        if(timeArr.length > 0 ){
+            date.setHours(parseInt(formattedTime.split(":")[0]))
+            date.setMinutes(parseInt(formattedTime.split(":")[1]))
+        }
         this.setState((state, props) => {
             return {
                 selectedTime: time,
@@ -210,7 +223,7 @@ export class DateTimePicker extends Component{
     render(){
 
         const {placeholder, dateFormat, type, confirm, editable, disabled,
-            inputName, inputClass, showSlotPanel, availableTimeSlots } = this.props;
+            inputName, inputClass, showTimeSlotPanel, availableTimeSlots } = this.props;
         const { selectedDate, selectedTime } = this.state
         let computedWidth = this.computedWidth(); //TODO
         let innerPopupStyle = { ...this.state.position, ...this.props.popupStyle }
@@ -259,9 +272,6 @@ export class DateTimePicker extends Component{
                     <div className="mx-datepicker-popup"
                      style={{innerPopupStyle}}
                      ref="calendar">
-                    <slot name="header">
-
-                    </slot>
                     <CalendarPanel
                         index="-1"
                         type={type}
@@ -270,7 +280,7 @@ export class DateTimePicker extends Component{
                         visible={this.state.popupVisible}
                         selectDate={this.selectDate}
                         />
-                    { showSlotPanel &&
+                    { showTimeSlotPanel &&
                          <TimePickerPanel
                                 index="-1"
                                 type={type}

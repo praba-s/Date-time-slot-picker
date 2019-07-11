@@ -11,8 +11,8 @@ export class CalendarPanel extends Component {
             panel: 'DATE',
             dates: [],
             now : '',
-            calendarYear: '',
-            calendarMonth: '',
+            calendarYear: 0,
+            calendarMonth: 0,
             firstYear: '',
             months:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         }
@@ -27,6 +27,12 @@ export class CalendarPanel extends Component {
         inputClass: 'mx-input',
         popupStyle: '',
         placeholder: "Please select Date",
+        disabledDays: {
+            type: [Array, Function],
+            default: function () {
+                return []
+            }
+        },
     }
 
     componentDidMount() {
@@ -280,7 +286,7 @@ export class CalendarPanel extends Component {
                     {
                         (panel === 'DATE') &&
                         <PanelDate value={value}
-                                    date-format={dateFormat}
+                                    dateFormat={dateFormat}
                                     calendarMonth={calendarMonth}
                                     calendarYear={calendarYear}
                                     startAt={startAt}
