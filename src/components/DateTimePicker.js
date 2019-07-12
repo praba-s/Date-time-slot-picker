@@ -24,7 +24,8 @@ export class DateTimePicker extends Component{
         const dateVal = !isEmpty(value) && this.isValidValue(value) ? value : ''
         this.setState((state, props) => {
             return {
-                selectedDate: dateVal
+                selectedDate: dateVal,
+                //selectedTime: dateVal.getHours() +":"+dateVal.getMinutes()
             }
         });
         this.updateDate()
@@ -213,11 +214,13 @@ export class DateTimePicker extends Component{
     render(){
 
         const {placeholder, dateFormat, type, confirm, editable, disabled,
-            inputName, inputClass, showTimeSlotPanel, availableTimeSlots, startAt, endAt, notBefore, notAfter } = this.props;
+            inputName, inputClass, showTimeSlotPanel, availableTimeSlots, startAt, endAt,
+            notBefore, notAfter, isTimeSlotsLoading, disabledDays } = this.props;
         const { selectedDate, selectedTime, showPopup } = this.state
         let computedWidth = this.computedWidth(); //TODO
         let innerPopupStyle = { ...this.state.position, ...this.props.popupStyle }
         let inputValue = this.text();
+        let isLoading = isTimeSlotsLoading
         return (
             <div>
             <div className="mx-datepicker"
@@ -258,7 +261,7 @@ export class DateTimePicker extends Component{
                     </span>
                 </div>
             </div>
-                {this.state.showPopup &&
+                {showPopup &&
                     <div className="mx-datepicker-popup"
                      style={{innerPopupStyle}}
                      ref="calendar">
@@ -268,12 +271,12 @@ export class DateTimePicker extends Component{
                             type={type}
                             date-format={dateFormat}
                             value={selectedDate}
-                            visible={showPopup}
                             selectDate={this.selectDate}
                             startAt={startAt}
                             endAt={endAt}
                             notBefore={notBefore}
                             notAfter={notAfter}
+                            disabledDays={disabledDays}
                             />
                         { showTimeSlotPanel &&
                              <TimePickerPanel
@@ -285,7 +288,16 @@ export class DateTimePicker extends Component{
                                     availableTimeSlots={ availableTimeSlots }
                              />
                         }
+{/*
+                        {isLoading  &&
+                            <div className='loader-container'>
+                                <slot name="Loader">
+                                    <div className='loader'></div>
+                                </slot>
+                            </div>
+                        }*/}
                     </div>
+
                     <slot name="footer">
                         {confirm &&
                             <div className="mx-datepicker-footer">
@@ -315,6 +327,7 @@ DateTimePicker.propTypes = {
     onDateChange: PropTypes.func,
     onTimeChange: PropTypes.func,
     onDateTimeChange: PropTypes.func,
+    isTimeSlotsLoading: PropTypes.bool,
     /*defaultValue: function(props, propName, componentName){
         let isValid = isValidDate(props[propName]);
         if(!isValid){
@@ -377,5 +390,6 @@ DateTimePicker.defaultProps = {
     endAt:null,
     notBefore: null,
     notAfter: null,
-    disabledDays: null
+    disabledDays: null,
+    isTimeSlotsLoading: false
 }

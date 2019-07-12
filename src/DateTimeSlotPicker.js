@@ -16,7 +16,8 @@ export default class DateTimeSlotPicker extends Component{
         this.state ={
             showTimeSlotPanel : false,
             availableTimeSlots: [],
-            selectedDateValue : new Date()
+            selectedDateValue : new Date(),
+            isTimeSlotsLoading: false
         }
     }
 
@@ -29,14 +30,16 @@ export default class DateTimeSlotPicker extends Component{
             return {
                 availableTimeSlots : [],
                 showTimeSlotPanel : false,
-                selectedDateValue: date
+                selectedDateValue: date,
+                isTimeSlotsLoading: true
             }
         })
         setTimeout(() => {
             this.setState((state, props) => {
                 return {
                     availableTimeSlots : this.getAvailableTimeSlots(),
-                    showTimeSlotPanel : true
+                    showTimeSlotPanel : true,
+                    //isTimeSlotsLoading: false
                 }
             })
         }, 4000);
@@ -107,18 +110,22 @@ export default class DateTimeSlotPicker extends Component{
     }
 
     render() {
+        const {showTimeSlotPanel, availableTimeSlots, isTimeSlotsLoading} = this.state
         return (
           <div>
               <DateTimePicker format="MM/DD/YYYY hh:mm a"
                               onDateTimeChange={this.onDateTimeChange}
                               onDateChange={this.onDateChange}
                               onTimeChange={this.onTimeChange}
-                              showTimeSlotPanel = {this.state.showTimeSlotPanel}
-                              availableTimeSlots = { this.state.availableTimeSlots }
+                              showTimeSlotPanel = {showTimeSlotPanel}
+                              availableTimeSlots = {availableTimeSlots }
                               notBefore={new Date()}
                               notAfter={new Date(2019, 6, 28)}
+                              isTimeSlotsLoading = {isTimeSlotsLoading}
+                              disabledDays={[new Date(2019, 6, 20), new Date(2019, 6, 17)]}
               >
               </DateTimePicker>
+
           </div>
         )
     }

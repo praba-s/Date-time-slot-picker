@@ -137,10 +137,11 @@ export class CalendarPanel extends Component {
     }
 
     inDisabledDays(time) {
-        if (Array.isArray(this.disabledDays)) {
-            return this.disabledDays.some(v => this.getCriticalTime(v) === time)
-        } else if (typeof this.disabledDays === 'function') {
-            return this.disabledDays(new Date(time))
+        const { disabledDays } = this.props;
+        if (Array.isArray(disabledDays)) {
+            return disabledDays.some(v => this.getCriticalTime(v) === time)
+        } else if (typeof disabledDays === 'function') {
+            return disabledDays(new Date(time))
         }
         return false
     }
@@ -166,7 +167,6 @@ export class CalendarPanel extends Component {
     }
 
     isDisabledDate = (date) => {
-        console.log("isDisabledDate  " + date)
         const time = new Date(date).getTime()
         const maxTime = new Date(date).setHours(23, 59, 59, 999)
         return (
@@ -205,7 +205,7 @@ export class CalendarPanel extends Component {
                     time = new Date(notBefore)
                 }
                 if (
-                    this.startAt &&
+                    startAt &&
                     time.getTime() < new Date(startAt).getTime()
                 ) {
                     time = new Date(startAt)
