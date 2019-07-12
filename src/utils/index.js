@@ -62,7 +62,7 @@ export function convertTimeFrom12To24(timeStr) {
 
 
     var hoursInt = parseInt(hours, 10),
-        offset = meridian == 'PM' ? 12 : 0;
+        offset = (meridian === 'PM') ? 12 : 0;
 
     if (hoursInt === 12) {
         hoursInt = offset;
@@ -73,7 +73,6 @@ export function convertTimeFrom12To24(timeStr) {
 }
 
 export function formatDate (date, format) {
-  console.log("formatDate123    " + formatDate)
   if (!date) {
     return ''
   }

@@ -4,6 +4,8 @@ import { CalendarPanel } from '../components/CalendarPanel'
 import { TimePickerPanel } from "./TimePickerPanel";
 import { isEmpty } from '../utils/utils'
 import moment from 'moment'
+import {PanelDate} from "./date";
+import PropTypes from "prop-types";
 
 export class DateTimePicker extends Component{
 
@@ -11,25 +13,10 @@ export class DateTimePicker extends Component{
         super(props);
         this.state = {
             selectedDate: '',
+            selectedTime: "",
             showPopup: false,
             position: {},
-            selectedTime: ""
         }
-    }
-
-    static defaultProps = {
-        format: 'MM/DD/YYYY hh:mm a',
-        type: 'type',
-        confirmText: 'OK',
-        confirm: false,
-        inputName: 'date',
-        inputClass: 'mx-input',
-        popupStyle: '',
-        placeholder: "Please select Date",
-        showTimeSlotPanel: false,
-        selectedTime: '',
-        onDateChange: () => { },
-        onTimeChange: () => { }
     }
 
     componentDidMount() {
@@ -48,7 +35,6 @@ export class DateTimePicker extends Component{
         /*let dateText = this.isValidValue(selectedDate)
                 ? this.stringify(this.parse(selectedDate))
                 : ''*/
-        console.log("selectedDate **** " + selectedDate)
 
         let dateText  = isEmpty(selectedDate) ? '' : moment(selectedDate).format(this.props.format);
         return dateText;
@@ -116,6 +102,7 @@ export class DateTimePicker extends Component{
         e.stopPropagation();
         this.setState({selectedDate:  ''})
         this.updateDate(true)
+        this.closePopup()
         if(this.props.clear !== undefined){ this.props.clear()};
     }
 
@@ -154,7 +141,7 @@ export class DateTimePicker extends Component{
         if(close){ this.closePopup() }
     }
 
-    selectTime = (time, timeType) => {
+    onTimeChange = (time, timeType) => {
         let date = this.state.selectedDate;
         let timeArr = !isEmpty(time) ? time.split(":") : []
         let formattedTime = convertTimeFrom12To24(time + " " + timeType);
@@ -168,8 +155,9 @@ export class DateTimePicker extends Component{
                 selectedDate: date,
             }
         })
-        if(this.props.onTimeChange !== undefined){ this.props.onTimeChange(time + " " + timeType)};
-        this.closePopup()
+        this.props.onTimeChange(time + " " + timeType)
+        this.props.onDateTimeChange(date)
+        this.props.closeOnTimeSelection && this.closePopup()
     }
 
     updateDate = (confirm = false) => {
@@ -225,8 +213,8 @@ export class DateTimePicker extends Component{
     render(){
 
         const {placeholder, dateFormat, type, confirm, editable, disabled,
-            inputName, inputClass, showTimeSlotPanel, availableTimeSlots } = this.props;
-        const { selectedDate, selectedTime } = this.state
+            inputName, inputClass, showTimeSlotPanel, availableTimeSlots, startAt, endAt, notBefore, notAfter } = this.props;
+        const { selectedDate, selectedTime, showPopup } = this.state
         let computedWidth = this.computedWidth(); //TODO
         let innerPopupStyle = { ...this.state.position, ...this.props.popupStyle }
         let inputValue = this.text();
@@ -280,8 +268,12 @@ export class DateTimePicker extends Component{
                             type={type}
                             date-format={dateFormat}
                             value={selectedDate}
-                            visible={this.state.showPopup}
+                            visible={showPopup}
                             selectDate={this.selectDate}
+                            startAt={startAt}
+                            endAt={endAt}
+                            notBefore={notBefore}
+                            notAfter={notAfter}
                             />
                         { showTimeSlotPanel &&
                              <TimePickerPanel
@@ -289,7 +281,7 @@ export class DateTimePicker extends Component{
                                     type={type}
                                     selectedDate={selectedDate}
                                     selectedTime={selectedTime}
-                                    selectTime={this.selectTime}
+                                    onTimeChange={this.onTimeChange}
                                     availableTimeSlots={ availableTimeSlots }
                              />
                         }
@@ -306,4 +298,84 @@ export class DateTimePicker extends Component{
         </div>
         )
     }
+}
+
+
+DateTimePicker.propTypes = {
+    format: PropTypes.string,
+    confirmText: PropTypes.string,
+    confirm: PropTypes.bool,
+    inputName: PropTypes.string,
+    inputClass: PropTypes.string,
+    popupStyle: PropTypes.string,
+    placeholder: PropTypes.string,
+    showTimeSlotPanel: PropTypes.bool,
+    selectedTime: PropTypes.string,
+    closeOnTimeSelection: PropTypes.bool,
+    onDateChange: PropTypes.func,
+    onTimeChange: PropTypes.func,
+    onDateTimeChange: PropTypes.func,
+    /*defaultValue: function(props, propName, componentName){
+        let isValid = isValidDate(props[propName]);
+        if(!isValid){
+            return new Error(
+                'Invalid prop `' + propName + '` supplied to' +
+                ' `' + componentName + '`. Validation failed.'
+            );
+        }
+    },*/
+    firstDayOfWeek: function(props, propName, componentName){
+        let isValid = val => val >= 1 && val <= 7
+        if(!isValid){
+            return new Error(
+                'Invalid prop `' + propName + '` supplied to' +
+                ' `' + componentName + '`. Validation failed.'
+            );
+        }
+    },
+    notBefore:  function(props, propName, componentName){
+        let isValid = !props[propName] || isValidDate(props[propName])
+        if(!isValid){
+            return new Error(
+                'Invalid prop `' + propName + '` supplied to' +
+                ' `' + componentName + '`. Validation failed.'
+            );
+        }
+    },
+    notAfter: function(props, propName, componentName){
+        let isValid = !props[propName] || isValidDate(props[propName])
+        if(!isValid){
+            return new Error(
+                'Invalid prop `' + propName + '` supplied to' +
+                ' `' + componentName + '`. Validation failed.'
+            );
+        }
+    },
+    disabledDays: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.func
+    ]),
+}
+
+DateTimePicker.defaultProps = {
+    format: 'MM/DD/YYYY hh:mm a',
+    confirmText: 'OK',
+    confirm: false,
+    inputName: 'date',
+    inputClass: 'mx-input',
+    popupStyle: '',
+    placeholder: "Please select Date",
+    showTimeSlotPanel: false,
+    selectedTime: '',
+    closeOnTimeSelection: false,
+    onDateChange: () => {},
+    onTimeChange: () => {},
+    onDateTimeChange:() => {},
+    defaultValue: () => {},
+    firstDayOfWeek: 7,
+    startAt: null,
+    endAt:null,
+    notBefore: null,
+    notAfter: null,
+    disabledDays: null
 }

@@ -11,7 +11,6 @@ export class PanelDate extends Component {
   }
 
   selectDate ({ year, month, day }) {
-      console.log("year " + year)
       const date = new Date(year, month, day)
       if (this.props.disabledDate(date)) {
           return

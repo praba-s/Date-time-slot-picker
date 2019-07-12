@@ -16,7 +16,7 @@ export class TimePickerPanel extends Component{
     static defaultProps = {
         selectedDate : moment(),
         availableTimeSlots: [[],[]],
-        selectedTime : ''
+        onTimeChange : ''
     }
 
     componentDidMount(){
@@ -44,7 +44,7 @@ export class TimePickerPanel extends Component{
     }
 
     handleTimeTypeChange = (index) => {
-        this.setState({selectedTimeType: index == 0 ?  'AM' : 'PM'});
+        this.setState({selectedTimeType: index === 0 ?  'AM' : 'PM'});
     }
 
     getCellClasses = (time) => {
@@ -76,7 +76,7 @@ export class TimePickerPanel extends Component{
                     selectedTimeSlot : time
                 }
             })
-            this.props.selectTime(time, this.state.selectedTimeType)
+            this.props.onTimeChange(time, this.state.selectedTimeType)
         }
     }
 

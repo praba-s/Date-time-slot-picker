@@ -25,7 +25,6 @@ export default class DateTimeSlotPicker extends Component{
     }
 
     onDateChange = (date) => {
-        console.log("Onchange Date  " + date)
         this.setState((state, props) => {
             return {
                 availableTimeSlots : [],
@@ -41,8 +40,11 @@ export default class DateTimeSlotPicker extends Component{
                 }
             })
         }, 4000);
-
     }
+
+    onTimeChange = (time) => {}
+
+    onDateTimeChange = (date) => {}
 
     /*onDateChange = (date) => {
         console.log("On Date Change  " + date)
@@ -108,9 +110,13 @@ export default class DateTimeSlotPicker extends Component{
         return (
           <div>
               <DateTimePicker format="MM/DD/YYYY hh:mm a"
-                              onChange={this.onDateChange}
+                              onDateTimeChange={this.onDateTimeChange}
+                              onDateChange={this.onDateChange}
+                              onTimeChange={this.onTimeChange}
                               showTimeSlotPanel = {this.state.showTimeSlotPanel}
                               availableTimeSlots = { this.state.availableTimeSlots }
+                              notBefore={new Date()}
+                              notAfter={new Date(2019, 6, 28)}
               >
               </DateTimePicker>
           </div>

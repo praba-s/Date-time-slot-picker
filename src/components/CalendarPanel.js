@@ -9,6 +9,7 @@ export class CalendarPanel extends Component {
         super(props)
         this.state = {
             panel: 'DATE',
+            valueType: 'date',
             dates: [],
             now : '',
             calendarYear: 0,
@@ -27,6 +28,10 @@ export class CalendarPanel extends Component {
         inputClass: 'mx-input',
         popupStyle: '',
         placeholder: "Please select Date",
+        startAt: null,
+        endAt: null,
+        notBefore: null,
+        notAfter: null,
         disabledDays: {
             type: [Array, Function],
             default: function () {
@@ -63,11 +68,11 @@ export class CalendarPanel extends Component {
     }
 
     notBeforeTime() {
-        return this.getCriticalTime(this.notBefore)
+        return this.getCriticalTime(this.props.notBefore)
     }
 
     notAfterTime() {
-        return this.getCriticalTime(this.notAfter)
+        return this.getCriticalTime(this.props.notAfter)
     }
 
 
@@ -112,21 +117,21 @@ export class CalendarPanel extends Component {
     }
 
     inBefore(time, startAt) {
-        if (startAt === undefined) {
+        if (isEmpty(startAt)) {
             startAt = this.props.startAt
         }
         return (
-            (this.notBeforeTime && time < this.notBeforeTime) ||
+            (this.notBeforeTime() && time < this.notBeforeTime()) ||
             (startAt && time < this.getCriticalTime(startAt))
         )
     }
 
     inAfter(time, endAt) {
-        if (endAt === undefined) {
+        if (isEmpty(endAt)) {
             endAt = this.endAt
         }
         return (
-            (this.notAfterTime && time > this.notAfterTime) ||
+            (this.notAfterTime() && time > this.notAfterTime()) ||
             (endAt && time > this.getCriticalTime(endAt))
         )
     }
@@ -161,6 +166,7 @@ export class CalendarPanel extends Component {
     }
 
     isDisabledDate = (date) => {
+        console.log("isDisabledDate  " + date)
         const time = new Date(date).getTime()
         const maxTime = new Date(date).setHours(23, 59, 59, 999)
         return (
@@ -180,6 +186,8 @@ export class CalendarPanel extends Component {
     }
 
     selectDate = (date) => {
+        const {notBefore, startAt  } = this.props
+
             let time = new Date(date)
             if (isDateObejct(this.value)) {
                 time.setHours(
@@ -191,16 +199,16 @@ export class CalendarPanel extends Component {
             if (this.isDisabledTime(time)) {
                 time.setHours(0, 0, 0, 0)
                 if (
-                    this.notBefore &&
-                    time.getTime() < new Date(this.notBefore).getTime()
+                    notBefore &&
+                    time.getTime() < new Date(notBefore).getTime()
                 ) {
-                    time = new Date(this.notBefore)
+                    time = new Date(notBefore)
                 }
                 if (
                     this.startAt &&
-                    time.getTime() < new Date(this.startAt).getTime()
+                    time.getTime() < new Date(startAt).getTime()
                 ) {
-                    time = new Date(this.startAt)
+                    time = new Date(startAt)
                 }
             }
             this.updateNow(date)
