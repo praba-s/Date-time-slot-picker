@@ -11,7 +11,7 @@ export class DateTimePicker extends Component{
         super(props);
         this.state = {
             selectedDate: '',
-            popupVisible: false,
+            showPopup: false,
             position: {},
             selectedTime: ""
         }
@@ -21,16 +21,15 @@ export class DateTimePicker extends Component{
         format: 'MM/DD/YYYY hh:mm a',
         type: 'type',
         confirmText: 'OK',
-        confirm: true,
+        confirm: false,
         inputName: 'date',
         inputClass: 'mx-input',
         popupStyle: '',
         placeholder: "Please select Date",
         showTimeSlotPanel: false,
         selectedTime: '',
-        onChange: function () {
-
-        }
+        onDateChange: () => { },
+        onTimeChange: () => { }
     }
 
     componentDidMount() {
@@ -81,14 +80,14 @@ export class DateTimePicker extends Component{
         this.setState((state,props) => {
             return {
                 selectedDate : (selectedDate === '') ? new Date() : selectedDate,
-                popupVisible: true
+                showPopup: true
             }
         });
         this.updateDate();
     }
 
     closePopup = () => {
-        this.setState({'popupVisible': false});
+        this.setState({showPopup: false});
     }
 
     handleBlur = (event) =>{
@@ -96,7 +95,7 @@ export class DateTimePicker extends Component{
     }
 
     handleFocus (event) {
-        if (!this.popupVisible) {
+        if (!this.showPopup) {
             this.showPopup(event)
         }
         //this.props.focus(event) //TODO
@@ -166,9 +165,11 @@ export class DateTimePicker extends Component{
         this.setState((state, props) => {
             return {
                 selectedTime: time,
-                selectedDate: date
+                selectedDate: date,
             }
         })
+        if(this.props.onTimeChange !== undefined){ this.props.onTimeChange(time + " " + timeType)};
+        this.closePopup()
     }
 
     updateDate = (confirm = false) => {
@@ -180,7 +181,7 @@ export class DateTimePicker extends Component{
             return false
         }
         //if(this.props.input != undefined){ this.props.input()};
-        if(this.props.onChange !== undefined){ this.props.onChange(this.state.selectedDate)};
+        if(this.props.onDateChange !== undefined){ this.props.onDateChange(this.state.selectedDate)};
 
 
         /*this.handleChange();
@@ -269,7 +270,7 @@ export class DateTimePicker extends Component{
                     </span>
                 </div>
             </div>
-                {this.state.popupVisible &&
+                {this.state.showPopup &&
                     <div className="mx-datepicker-popup"
                      style={{innerPopupStyle}}
                      ref="calendar">
@@ -279,7 +280,7 @@ export class DateTimePicker extends Component{
                             type={type}
                             date-format={dateFormat}
                             value={selectedDate}
-                            visible={this.state.popupVisible}
+                            visible={this.state.showPopup}
                             selectDate={this.selectDate}
                             />
                         { showTimeSlotPanel &&
