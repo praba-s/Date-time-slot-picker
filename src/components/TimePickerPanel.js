@@ -54,7 +54,7 @@ export class TimePickerPanel extends Component{
         const classes = []
         classes.push("cell")
 
-        this.isDisabledTime(time, this.state.selectedTimeType) ? classes.push("non-selectable") : classes.push("selectable");
+        this.isDisabledTime(time, this.state.selectedTimeType) ? classes.push("disabled") : classes.push("selectable");
         if(this.state.selectedTimeSlot === time){
             classes.push("actived")
         }

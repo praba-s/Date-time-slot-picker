@@ -17,7 +17,8 @@ export default class DateTimeSlotPicker extends Component{
             showTimeSlotPanel : false,
             availableTimeSlots: [],
             selectedDateValue : new Date(),
-            isTimeSlotsLoading: false
+            isTimeSlotsLoading: false,
+            disabledDays: [new Date(2019, 6, 20), new Date(2019, 6, 17)]
         }
     }
 
@@ -110,7 +111,7 @@ export default class DateTimeSlotPicker extends Component{
     }
 
     render() {
-        const {showTimeSlotPanel, availableTimeSlots, isTimeSlotsLoading} = this.state
+        const {showTimeSlotPanel, availableTimeSlots, isTimeSlotsLoading, disabledDays} = this.state
         return (
           <div>
               <DateTimePicker format="MM/DD/YYYY hh:mm a"
@@ -122,7 +123,8 @@ export default class DateTimeSlotPicker extends Component{
                               notBefore={new Date()}
                               notAfter={new Date(2019, 6, 28)}
                               isTimeSlotsLoading = {isTimeSlotsLoading}
-                              disabledDays={[new Date(2019, 6, 20), new Date(2019, 6, 17)]}
+                              closeOnTimeSelection={true}
+                              disabledDays={disabledDays}
               >
               </DateTimePicker>
 
