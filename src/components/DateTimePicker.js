@@ -29,6 +29,27 @@ export class DateTimePicker extends Component{
             }
         });
         this.updateDate()
+
+        document.addEventListener("mousedown", this.handleClick, false)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("mousedown", this.handleClick, false)
+    }
+
+    handleClick = (e) => {
+        if(!this.calendarPopUp){
+            return
+        }
+        if(this.calendarPopUp.contains(e.target)){
+            return;
+        }else{
+            this.setState((state, props) => {
+                return {
+                    showPopup: false
+                }
+            })
+        }
     }
 
     text = () => {
@@ -204,7 +225,7 @@ export class DateTimePicker extends Component{
         }
     }
 
-    calendarChange(){
+    calendarPopUpChange(){
 
     }
 
@@ -265,7 +286,7 @@ export class DateTimePicker extends Component{
                 {showPopup &&
                     <div className="mx-datepicker-popup"
                      style={{innerPopupStyle}}
-                     ref="calendar">
+                     ref={calendar => this.calendarPopUp = calendar}>
                     <div className="mx-Datetime-picker-wrapper">
                         <CalendarPanel
                             index="-1"

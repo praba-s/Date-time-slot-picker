@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { DateTimePicker } from "./components/DateTimePicker";
 import slots from "./slots";
 import moment from "moment";
+import PropTypes from "prop-types";
 
 /*
 import {buildUrl} from "../../actions";
@@ -39,7 +40,7 @@ export default class DateTimeSlotPicker extends Component{
         setTimeout(() => {
             this.setState((state, props) => {
                 return {
-                    availableTimeSlots : this.getAvailableTimeSlots(),
+                    availableTimeSlots : this.getAvailableTimeSlots_Local(),
                     showTimeSlotPanel : true,
                     //isTimeSlotsLoading: false
                 }
@@ -58,6 +59,7 @@ export default class DateTimeSlotPicker extends Component{
                 selectedDateValue: moment(dateTime),
             }
         })
+        this.props.onChange(dateTime)
     }
 
     /*onDateChange = (date) => {
@@ -92,20 +94,6 @@ export default class DateTimeSlotPicker extends Component{
         })
     }*/
 
-    getAvailableTimeSlots(){
-        let slotsFromServer = slots;
-        let availableTimeSlots = [];
-        let amSlot = [];
-        let pmSlot = []
-        slotsFromServer.start_times.map(time => {
-            let momentDate = moment.utc(time, "YYYY-MM-DDThh:mm:ssTZD");
-            let timeStr = momentDate.format("hh:mm a")
-            timeStr.indexOf("am") > 1 ? amSlot.push(momentDate.format("hh:mm")) : pmSlot.push(momentDate.format("hh:mm"))
-        })
-        availableTimeSlots.push(amSlot); availableTimeSlots.push(pmSlot);
-        return availableTimeSlots;
-    }
-
     parseTimeSlot(slots){
         let slotsFromServer = slots;
         let availableTimeSlots = [];
@@ -119,6 +107,21 @@ export default class DateTimeSlotPicker extends Component{
         availableTimeSlots.push(amSlot); availableTimeSlots.push(pmSlot);
         return availableTimeSlots;
     }
+
+    getAvailableTimeSlots_Local(){
+        let slotsFromServer = slots;
+        let availableTimeSlots = [];
+        let amSlot = [];
+        let pmSlot = []
+        slotsFromServer.start_times.map(time => {
+            let momentDate = moment.utc(time, "YYYY-MM-DDThh:mm:ssTZD");
+            let timeStr = momentDate.format("hh:mm a")
+            timeStr.indexOf("am") > 1 ? amSlot.push(momentDate.format("hh:mm")) : pmSlot.push(momentDate.format("hh:mm"))
+        })
+        availableTimeSlots.push(amSlot); availableTimeSlots.push(pmSlot);
+        return availableTimeSlots;
+    }
+
 
     render() {
         const {showTimeSlotPanel, availableTimeSlots, isTimeSlotsLoading, disabledDays, selectedDateValue} = this.state
@@ -142,4 +145,11 @@ export default class DateTimeSlotPicker extends Component{
           </div>
         )
     }
+}
+
+DateTimeSlotPicker.propTypes = {
+}
+
+DateTimeSlotPicker.defaultProps = {
+   onChange: () => {},
 }
