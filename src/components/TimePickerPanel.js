@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
+import {isEmpty} from "../utils/utils";
 
 export class TimePickerPanel extends Component{
     constructor (props) {
@@ -9,6 +10,7 @@ export class TimePickerPanel extends Component{
             defaultTimeSlotsPM : this.getDefaultTimeSlots('12:00 pm', '11:59 pm'),
             selectedTimeType : 'AM',
             selectedTimeSlot : '',
+            selectedTime : '',
             selectedDate: ''
         }
     }
@@ -21,11 +23,13 @@ export class TimePickerPanel extends Component{
     }
 
     componentDidMount(){
+        const { selectedDate, selectedTime } = this.props
         this.setState((state, props) => {
             return {
-                selectedDate : this.props.selectedDate,
-                selectedTime : this.props.selectedTime,
-                selectedTimeSlot: this.props.selectedTime
+                selectedDate : selectedDate,
+                selectedTimeSlot : !isEmpty(selectedTime)? selectedTime.split(" ")[0] : '',
+                selectedTimeType : !isEmpty(selectedTime)? selectedTime.split(" ")[1].toUpperCase() : 'AM',
+                selectedTime : selectedTime
             }
         });
     }
@@ -51,11 +55,12 @@ export class TimePickerPanel extends Component{
 
     getCellClasses = (time) => {
         const {  selectedDate } = this.props;
+        const { selectedTimeType, selectedTimeSlot, selectedTime} = this.state;
         const classes = []
         classes.push("cell")
 
-        this.isDisabledTime(time, this.state.selectedTimeType) ? classes.push("disabled") : classes.push("selectable");
-        if(this.state.selectedTimeSlot === time){
+        this.isDisabledTime(time,selectedTimeType) ? classes.push("disabled") : classes.push("selectable");
+        if(selectedTimeSlot === time && (!isEmpty(selectedTime) && selectedTime.indexOf(selectedTimeType.toLowerCase())) > -1){
             classes.push("actived")
         }
         return classes
@@ -75,10 +80,11 @@ export class TimePickerPanel extends Component{
         if(!this.isDisabledTime(time, this.state.selectedTimeType)){
             this.setState((state, props) => {
                 return {
-                    selectedTimeSlot : time
+                    selectedTimeSlot : time,
+                    selectedTime : time + " "+this.state.selectedTimeType
                 }
             })
-            this.props.onTimeChange(time, this.state.selectedTimeType)
+            this.props.onTimeChange(time, this.state.selectedTimeType.toLowerCase())
         }
     }
 

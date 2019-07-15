@@ -25,7 +25,7 @@ export class DateTimePicker extends Component{
         this.setState((state, props) => {
             return {
                 selectedDate: dateVal,
-                //selectedTime: dateVal.getHours() +":"+dateVal.getMinutes()
+               // selectedTime: dateVal.getHours() +":"+dateVal.getMinutes()
             }
         });
         this.updateDate()
@@ -146,17 +146,18 @@ export class DateTimePicker extends Component{
         let date = this.state.selectedDate;
         let timeArr = !isEmpty(time) ? time.split(":") : []
         let formattedTime = convertTimeFrom12To24(time + " " + timeType);
+        let selectedTime = time + " " + timeType;
         if(timeArr.length > 0 ){
             date.setHours(parseInt(formattedTime.split(":")[0]))
             date.setMinutes(parseInt(formattedTime.split(":")[1]))
         }
         this.setState((state, props) => {
             return {
-                selectedTime: time,
+                selectedTime: selectedTime,
                 selectedDate: date,
             }
         })
-        this.props.onTimeChange(time + " " + timeType)
+        this.props.onTimeChange(selectedTime)
         this.props.onDateTimeChange(date)
         this.props.closeOnTimeSelection && this.closePopup()
     }

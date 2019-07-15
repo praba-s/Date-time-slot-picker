@@ -16,7 +16,7 @@ export default class DateTimeSlotPicker extends Component{
         this.state ={
             showTimeSlotPanel : false,
             availableTimeSlots: [],
-            selectedDateValue : new Date(),
+            selectedDateValue : moment(),
             isTimeSlotsLoading: false,
             disabledDays: [new Date(2019, 6, 20), new Date(2019, 6, 17)]
         }
@@ -27,11 +27,12 @@ export default class DateTimeSlotPicker extends Component{
     }
 
     onDateChange = (date) => {
+        console.log("onDateChange   " + date)
         this.setState((state, props) => {
             return {
                 availableTimeSlots : [],
                 showTimeSlotPanel : false,
-                selectedDateValue: date,
+                selectedDateValue: moment(date),
                 isTimeSlotsLoading: true
             }
         })
@@ -46,9 +47,18 @@ export default class DateTimeSlotPicker extends Component{
         }, 4000);
     }
 
-    onTimeChange = (time) => {}
+    onTimeChange = (time) => {
+        console.log("time  " + time)
+    }
 
-    onDateTimeChange = (date) => {}
+    onDateTimeChange = (dateTime) => {
+        console.log("dateTime  " + dateTime)
+        this.setState((state, props) => {
+            return {
+                selectedDateValue: moment(dateTime),
+            }
+        })
+    }
 
     /*onDateChange = (date) => {
         console.log("On Date Change  " + date)
@@ -111,13 +121,14 @@ export default class DateTimeSlotPicker extends Component{
     }
 
     render() {
-        const {showTimeSlotPanel, availableTimeSlots, isTimeSlotsLoading, disabledDays} = this.state
+        const {showTimeSlotPanel, availableTimeSlots, isTimeSlotsLoading, disabledDays, selectedDateValue} = this.state
         return (
           <div>
               <DateTimePicker format="MM/DD/YYYY hh:mm a"
                               onDateTimeChange={this.onDateTimeChange}
                               onDateChange={this.onDateChange}
                               onTimeChange={this.onTimeChange}
+                              value = {selectedDateValue}
                               showTimeSlotPanel = {showTimeSlotPanel}
                               availableTimeSlots = {availableTimeSlots }
                               notBefore={new Date()}
